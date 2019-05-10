@@ -4,7 +4,9 @@ instancia::instancia()
 {
 	nome = "";
 	dimensao = 0;
-	adj = vector<vector<int>>();
+	media_heuristica = 0.0;
+	media_meta_heuristica = 0.0;
+	adj = vector<vector<float>>();
 }
 
 instancia::~instancia()

@@ -5,15 +5,17 @@
 
 #include <iostream>
 #include <tchar.h>
-#include <ctime>
+#include <chrono>
 #include <random>
 #include "leitor.h"
 #include "instancia.h"
 #include "solucao.h"
 
+#define INSTANCIAS 8
+#define EXECS 10
 vector<int> visitados;
-instancia i;
-constexpr auto inicial = 0;
+vector<instancia> instancias(INSTANCIAS);
+vector<instancia>::iterator i = instancias.begin();
 random_device rd;
 default_random_engine rng(rd());
 

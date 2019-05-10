@@ -1,9 +1,6 @@
-ï»¿// APA.cpp: define o ponto de entrada para o aplicativo.
-//
+#include "TSP.h"
 
-#include "APA.h"
-
-float g(vector<float> t)
+int g(vector<float> t)
 {
 	int menor = INT_MAX;
 	int tmelhor = 0;
@@ -30,10 +27,14 @@ int f(solucao s)
 solucao opt_2(solucao s, int j, int k)
 {
 	s.custo -= i->adj[s.rota[j - 1]][s.rota[j]];
+	s.custo -= i->adj[s.rota[j]][s.rota[j + 1]];
 	s.custo -= i->adj[s.rota[k - 1]][s.rota[k]];
+	s.custo -= i->adj[s.rota[k]][s.rota[k + 1]];
 	iter_swap(s.rota.begin() + j, s.rota.begin() + k);
 	s.custo += i->adj[s.rota[j - 1]][s.rota[j]];
+	s.custo += i->adj[s.rota[j]][s.rota[j + 1]];
 	s.custo += i->adj[s.rota[k - 1]][s.rota[k]];
+	s.custo += i->adj[s.rota[k]][s.rota[k + 1]];
 	return s;
 }
 
@@ -44,9 +45,24 @@ solucao opt_2_best(solucao s)
 	size_t size = s.rota.size();
 	float progresso = 0.0;
 	float passo = 100.0 / (size - 2);
+	/*int i = 0;
+	while (i < size) 
+	{
+		si = opt_2(s, (rand() % (size-1)) + 1, (rand() % (size-1)) + 1);
+		if (si.custo < ret.custo)
+		{
+			ret = si;
+			i = 0;
+			continue;
+		}
+		cout << "\rMovimentando na vizinhança 2op-t: " << progresso << "%";
+		progresso += passo;
+		++i;
+	}
+	cout << "\rMovimentando na vizinhança 2op-t: 100%     " << endl;*/
 	for (int i = 1; i < size - 2; i++)
 	{
-		cout << "\rMovimentando na vizinhanÃ§a 2op-t: " << progresso << "%";
+		cout << "\rMovimentando na vizinhança 2op-t: " << progresso << "%";
 		for (int k = i + 1; k < size - 1; k++)
 		{
 			si = opt_2(s, i, k);
@@ -55,7 +71,7 @@ solucao opt_2_best(solucao s)
 		}
 		progresso += passo;
 	}
-	cout << "\rMovimentando na vizinhanÃ§a 2op-t: 100%     " << endl;
+	cout << "\rMovimentando na vizinhança 2op-t: 100%     " << endl;
 	return ret;
 }
 
@@ -66,7 +82,7 @@ solucao opt_3(solucao s, int i, int k, int j)
 	s.custo = f(s);
 	return s;
 }
-//O(NÂ³) pÃ©ssimo
+//O(N³) péssimo
 solucao opt_3_best(solucao s)
 {
 	solucao ret = s;
@@ -78,7 +94,7 @@ solucao opt_3_best(solucao s)
 	float passo = 100.0 / 5;
 	while (melhora < 5)
 	{
-		cout << "\rMovimentando na vizinhanÃ§a 3op-t: " << progresso << "%";
+		cout << "\rMovimentando na vizinhança 3op-t: " << progresso << "%";
 		for (int i = 1; i < size - 3; i++)
 		{
 			for (int k = i + 1; k < size - 2; k++)
@@ -97,7 +113,7 @@ solucao opt_3_best(solucao s)
 		++melhora;
 		progresso += passo;
 	}
-	cout << "\rMovimentando na vizinhanÃ§a 3op-t: 100%     " << endl;
+	cout << "\rMovimentando na vizinhança 3op-t: 100%     " << endl;
 	return ret;
 }
 
@@ -127,7 +143,7 @@ solucao doubleBridge_best(solucao s)
 	float passo = (float)100.0 / size;
 	for (int i = 0; i < size; i++)
 	{
-		cout << "\rMovimentando na vizinhanÃ§a double bridge: " << progresso << "%";
+		cout << "\rMovimentando na vizinhança double bridge: " << progresso << "%";
 		si = doubleBridge(s);
 		if (si.custo < ret.custo)
 		{
@@ -136,7 +152,7 @@ solucao doubleBridge_best(solucao s)
 		}
 		progresso += passo;
 	}
-	cout << "\rMovimentando na vizinhanÃ§a double bridge: 100%     " << endl;
+	cout << "\rMovimentando na vizinhança double bridge: 100%     " << endl;
 	return ret;
 }
 
@@ -144,7 +160,8 @@ solucao get_solucao()
 {
 	solucao s;
 	vector<int> valores;
-	int aux = rand() % i->dimensao;
+	//int aux = rand() % i->dimensao;
+	int aux = 0;
 	s.rota.push_back(aux);
 	for (int j = 0; j < i->dimensao; j++)
 	{
@@ -164,9 +181,10 @@ solucao get_solucao()
 	return s;
 }
 
-void construcaoGulosa(float g(vector<float> t), solucao & s)
+void construcaoGulosa(int g(vector<float> t), solucao & s)
 {
-	int aux = rand() % i->dimensao;
+	//int aux = rand() % i->dimensao;
+	int aux = 0;
 	s.rota.push_back(aux);
 	visitados.push_back(aux);
 	vector<float> C = i->adj[aux]; //Inicialize o conjunto C de elementos candidatos;
@@ -191,7 +209,7 @@ void VND(int f(solucao s), vector<solucao(*)(solucao)> N, size_t r, solucao & s)
 		solucao si = N[k](s);
 		i->media_heuristica += si.custo; ++n;
 		if (!(si.custo < s.custo)) continue;
-		//cout << si.custo << " Ã© melhor que " << s.custo << endl;
+		//cout << si.custo << " é melhor que " << s.custo << endl;
 		s = si; k = 0;
 	}
 	i->media_heuristica = i->media_heuristica / n;
@@ -208,7 +226,7 @@ void MS(int f(solucao s), vector<solucao(*)(solucao)> N, int parada, solucao & s
 		s0 = N[rand() % N.size()](s0);
 		i->media_meta_heuristica += s0.custo; ++n;
 		if (!(s0.custo < s.custo)) continue;
-		//cout << s0.custo << " Ã© melhor que " << s.custo << endl;
+		//cout << s0.custo << " é melhor que " << s.custo << endl;
 		s = s0; k = 0;
 	}
 	i->media_meta_heuristica = i->media_meta_heuristica / n;
@@ -219,19 +237,17 @@ int main(int argc, char** argv)
 	_tsetlocale(LC_ALL, _T("portuguese"));
 	srand(time(0));
 
-	const char* desc = ".\\instancias_teste\\descricao.txt";
-	vector<string> teste { ".\\instancias_teste\\bayg29.txt", ".\\instancias_teste\\bays29.txt", 
-		".\\instancias_teste\\berlin52.txt", ".\\instancias_teste\\bier127.txt", 
-		".\\instancias_teste\\brazil58.txt", ".\\instancias_teste\\ch130.txt", 
-		".\\instancias_teste\\ch150.txt", ".\\instancias_teste\\swiss42.txt" };
-	
+	const char* desc = ".\\instancias_tsp_cup\\descricao.txt";
+	vector<string> teste{ ".\\instancias_tsp_cup\\tsp1.txt", ".\\instancias_tsp_cup\\tsp2.txt",
+		".\\instancias_tsp_cup\\tsp3.txt" };
+
 	cout << "Lendo arquivos..." << endl;
-	vector<solucao> solucoes; 
+	vector<solucao> solucoes;
 	vector<solucao> solucoes_meta;
 	for (int j = 0; j < INSTANCIAS; j++)
 	{
-		leitor l(teste[j]);
-		cout << "Construindo instÃ¢ncia" << teste[j].substr(teste[j].find_last_of("/\\")) << "   \r";
+		leitorTSP l(teste[j]);
+		cout << "Construindo instância" << teste[j].substr(teste[j].find_last_of("/\\")) << "   \r";
 		l.constroi(instancias[j]);
 		solucao s;
 		construcaoGulosa(g, s);
@@ -241,65 +257,51 @@ int main(int argc, char** argv)
 	}
 	i = instancias.begin();
 	cout << endl;
-	ifstream arquivo;
-	arquivo.open(desc);
-	if (!arquivo.is_open()) return 1;
-	string linha;
-	vector<float> otimo;
-	size_t pos;
-	while (!arquivo.eof())
-	{
-		getline(arquivo, linha);
-		if (pos = linha.find(i->nome) != string::npos) 
-		{
-			pos = linha.find("=");
-			otimo.push_back(stof(linha.substr(pos+2)));
-			++i;
-		}
-	}
-	i = instancias.begin();
 	vector<solucao(*)(solucao a)> N;
 	N.push_back(opt_2_best);
 	N.push_back(doubleBridge_best);
 	//N.push_back(opt_3_best);
-
-	cout << "ConcluÃ­do" << endl;
+	
+	cout << "Concluído" << endl;
 	chrono::steady_clock::time_point tick, tack;
 	for (int j = 0; j < INSTANCIAS; j++)
 	{
-		cout << "VND da instÃ¢ncia " << instancias[j].nome << endl;
+		cout << "VND da instância " << instancias[j].nome << endl;
 		tick = chrono::steady_clock::now();
 		VND(f, N, N.size(), solucoes[j]);
 		tack = chrono::steady_clock::now();
-		solucoes[j].tempo = chrono::duration_cast<chrono::milliseconds>(tack - tick).count();
+		solucoes[j].tempo = chrono::duration_cast<chrono::seconds>(tack - tick).count();
 		//solucoes[j].print();
-		
-		cout << "Multi Start da instÃ¢ncia " << instancias[j].nome << endl;
+
+		cout << "Multi Start da instância " << instancias[j].nome << endl;
 		tick = chrono::steady_clock::now();
 		MS(f, N, EXECS, solucoes_meta[j]); //10 exec cada instancia
 		tack = chrono::steady_clock::now();
-		solucoes_meta[j].tempo = chrono::duration_cast<chrono::milliseconds>(tack - tick).count();
+		solucoes_meta[j].tempo = chrono::duration_cast<chrono::seconds>(tack - tick).count();
 		//solucoes_meta[j].print();
 		++i;
 	}
 	i = instancias.begin();
 	string tab = "\t";
 	cout << endl;
-	cout << tab << "\t\tHeurÃ­stica construtiva\t\t\tMeta-heurÃ­stica" << endl;
-	cout << tab << "\tÃ³timo\tmÃ©dia\tmelhor\tmÃ©dia\tgap\tmÃ©dia\tmelhor\tmÃ©dia\tgap" << endl;
-	cout << tab << "\t\tsoluÃ§Ã£o\tsoluÃ§Ã£o\ttempo\t\tsoluÃ§Ã£o\tsoluÃ§Ã£o\ttempo" << endl;
+	cout << tab << "\t\tHeurística construtiva\t\t\tMeta-heurística" << endl;
+	cout << tab << "\tótimo\tmédia\tmelhor\tmédia\tgap\tmédia\tmelhor\tmédia\tgap" << endl;
+	cout << tab << "\t\tsolução\tsolução\ttempo\t\tsolução\tsolução\ttempo" << endl;
 	for (int j = 0; j < INSTANCIAS; j++)
 	{
 		cout << instancias[j].nome;
 		if (!(instancias[j].nome.size() >= 8))
 			cout << tab;
-		printf("\t%.0f\t%.1f\t%.0f\t%.0fms\t%.1f%%", otimo[j], i->media_heuristica, solucoes[j].custo, solucoes[j].tempo, ((solucoes[j].custo - otimo[j]) / otimo[j]) * 100.0);
-		printf("\t%.1f\t%.0f\t%.0fms\t%.1f%%", i->media_meta_heuristica, solucoes_meta[j].custo, solucoes_meta[j].tempo, ((solucoes_meta[j].custo - otimo[j]) / otimo[j]) * 100.0);
+		printf("\t%.0f\t%.1f\t%.0f\t%.0fs\t%.1f%%", 0.0, i->media_heuristica, solucoes[j].custo, solucoes[j].tempo, 0.0);
+		printf("\t%.1f\t%.0f\t%.0fs\t%.1f%%", i->media_meta_heuristica, solucoes_meta[j].custo, solucoes_meta[j].tempo, 0.0);
 		cout << endl;
 		++i;
 	}
 	i = instancias.begin();
-	for (solucao s : solucoes_meta)
-		s.print();
+	for (int j = 0; j < INSTANCIAS; j++)
+	{
+		solucoes[j].print();
+		solucoes_meta[j].print();
+	}
 	return 1;
 }

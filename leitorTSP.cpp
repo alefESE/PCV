@@ -1,19 +1,18 @@
-#include "leitor.h"
+#include "leitorTSP.h"
 
-leitor::leitor(string caminho)
+leitorTSP::leitorTSP(string caminho)
 {
 	arquivo.clear();
 	arquivo.open(caminho);
 }
 
-leitor::~leitor()
+leitorTSP::~leitorTSP()
 {
 	arquivo.close();
 }
 
-void leitor::constroi(instancia &inst)
+void leitorTSP::constroi(instanciaTSP& inst)
 {
-
 	if (!arquivo.is_open())
 	{
 		cout << "Não foi possível abrir o arquivo";
@@ -27,7 +26,7 @@ void leitor::constroi(instancia &inst)
 	{
 		inst.nome = linha.substr(pos + 4);
 		inst.nome.erase(remove_if(inst.nome.begin(), inst.nome.end(), isspace), inst.nome.end());
-		//cout << inst->nome << endl;
+		//cout << inst.nome << endl;
 	}
 	else
 	{
@@ -38,7 +37,7 @@ void leitor::constroi(instancia &inst)
 	if (pos = linha.find("DIMENSION") != string::npos)
 	{
 		inst.dimensao = stoi(linha.substr(pos + 9));
-		//cout << inst->dimensao << endl;
+		//cout << inst.dimensao << endl;
 	}
 	else
 	{
@@ -46,21 +45,20 @@ void leitor::constroi(instancia &inst)
 		exit(-2);
 	}
 	getline(arquivo, linha);
-	if (pos = linha.find("EDGE_WEIGHT_SECTION") != string::npos)
+	if (pos = linha.find("DISPLAY_DATA_SECTION") != string::npos)
 	{
 		inst.adj = vector<vector<float>>(inst.dimensao);
-		regex re("[\\s,]+");
+		regex re("[\\s]+");
 		for (int i = 0; i < inst.dimensao; i++)
 		{
 			getline(arquivo, linha);
 			linha = trim(linha);
-
 			vector<string> sep = split(linha, re);
-			for (string s : sep)
-			{
-				inst.adj[i].push_back(stof(s));
-				//cout << inst.grafo[i].back().peso << endl;
-			}
+			vertex v;
+			v.id = stoi(sep[0]);
+			v.x = stof(sep[1]);
+			v.y = stof(sep[2]);
+			inst.vertices.push_back(v);
 		}
 	}
 	else
@@ -68,21 +66,22 @@ void leitor::constroi(instancia &inst)
 		cout << "Formato incorreto" << endl;
 		exit(-3);
 	}
+	inst.constroi_adj();
 }
 
-vector<string> leitor::split(string str, regex re) {
+vector<string> leitorTSP::split(string str, regex re) {
 	vector<string> internal;
-	
+
 	sregex_token_iterator it(str.begin(), str.end(), re, -1);
 	sregex_token_iterator end;
 
-	while (it != end) 
+	while (it != end)
 		internal.push_back(*it++);
-	
+
 	return internal;
 }
 
-string leitor::trim(const string& str)
+string leitorTSP::trim(const string & str)
 {
 	size_t first = str.find_first_not_of(' ');
 	if (string::npos == first)

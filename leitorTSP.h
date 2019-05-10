@@ -8,21 +8,21 @@
 #include <vector>
 #include <string>
 #include <regex>
-#include "instancia.h"
+#include "instanciaTSP.h"
 
 using namespace std;
 
-class leitor
+class leitorTSP
 {
 public:
-	leitor(string caminho);
-	~leitor();
+	leitorTSP(string caminho);
+	~leitorTSP();
 
-	void constroi(instancia &i);
+	void constroi(instanciaTSP& i);
 
 private:
 	ifstream arquivo;
-	
+
 	vector<string> split(string str, regex re);
 	string trim(const string& str);
 };

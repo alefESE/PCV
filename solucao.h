@@ -9,7 +9,8 @@ class solucao
 {
 public:
 	vector<int> rota;
-	int custo = 0;
+	float custo = 0.0;
+	double tempo = 0.0;
 	solucao(vector<int> &rota) : rota(rota) {}
 	solucao() {}
 

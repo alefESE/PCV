@@ -2,7 +2,7 @@
 
 void solucao::print()
 {
-	for (int c : this->rota)
+	for (auto c : this->rota)
 		cout << c << " ";
 	cout << endl;
 	cout << "custo: " << this->custo << endl;
